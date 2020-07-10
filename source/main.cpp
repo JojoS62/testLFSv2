@@ -1,13 +1,33 @@
 #include "mbed.h"
 
 #include "SPIFBlockDevice.h"
-#include "littlefsv2/LittleFileSystem2.h"
-//#include "storage/filesystem/littlefs/LittleFileSystem.h"
+#include "LittleFileSystem2.h"
+#include "ProfilingBlockDevice.h"
 
 using namespace std::chrono;
 
-SPIFBlockDevice spif(PA_7, PA_6, PA_5, PA_4);
+SPIFBlockDevice bd(PA_7, PA_6, PA_5, PA_4);
+ProfilingBlockDevice  spif(&bd);
 LittleFileSystem2 fs("fs");
+
+void printStatistics()
+{
+    static bd_size_t readCountOld;
+    static bd_size_t writeCountOld;
+    static bd_size_t eraseCountOld;
+    
+    bd_size_t readCount = spif.get_read_count();
+    bd_size_t writeCount = spif.get_program_count();
+    bd_size_t eraseCount = spif.get_erase_count();
+    
+    printf("dr: %8lld dw: %8lld de: %8lld  r: %8lld w: %8lld e: %8lld\n", 
+      readCountOld - readCount, writeCountOld - writeCount, eraseCountOld - eraseCount,
+      readCount, writeCount, eraseCount);
+
+    readCountOld = readCount;
+    writeCountOld = writeCount;
+    eraseCountOld = eraseCount;
+}
 
 int main()
 {
@@ -28,6 +48,9 @@ int main()
     err = fs.mount(&spif);
     debug_if(err != 0, "mount error: %d\n", err);
 
+    // get blockdevice statistics up to now
+
+
     printf("write file  fileNo  time [ms]\n");
     char fileName[64];
     for (int i=0; i < 1000; i++) {
@@ -43,7 +66,8 @@ int main()
         debug_if(err != 0, "close error: %d\n", err);
 
         milliseconds elapsed_time = Kernel::Clock::now() - startTime;
-        printf("%8d %8d ms\n", i, int(elapsed_time.count()));
+        printf("%8d %8d ms   ", i, int(elapsed_time.count()));
+        printStatistics();
     }
 
     return 0;
