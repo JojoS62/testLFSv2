@@ -1,0 +1,28 @@
+{
+    "requires": ["bare-metal", "events", "mbed-trace", "spif-driver", "fat_chan", "filesystem", "littlefs2"],
+    "target_overrides": {
+        "*": {
+            "target.c_lib": "small",
+            "target.printf_lib": "minimal-printf",
+            "platform.minimal-printf-enable-floating-point": true,
+            "platform.stdio-baud-rate": 115200,
+            "platform.stdio-convert-newlines": true
+        },
+        "NUCLEO_F103RB": {
+            "target.device_has_remove": ["STDIO_MESSAGES"]
+        },
+        "BLUEPILL_F103CB": {
+        },
+        "BLUEPILL_F103C8": {
+        },      
+        "LPC812": {
+            "target.tickless-from-us-ticker": true
+        },
+        "LPC824": {
+            "target.tickless-from-us-ticker": true
+        },      
+        "WEACT_F411CE": {
+            "target.tickless-from-us-ticker": true
+        }
+    }
+}

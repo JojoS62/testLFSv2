@@ -1,0 +1,168 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "type": "shell",
+    "problemMatcher": {
+        "owner": "cpp",
+        "fileLocation":"absolute",
+        "pattern": {
+            "regexp": "\\[(Warning|Error)\\] (.*):(\\d+):(\\d+):(.*)",
+            "severity": 1,
+            "file": 2,
+            "line": 3,
+            "column": 4,
+            "message": 5
+        }
+    },
+    "presentation": {
+        "clear": true,
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false
+    },
+    "inputs": [
+        {
+        "type": "pickString",
+        "id": "targetSelection",
+        "description": "For which target do you want to create?",
+        "options": [
+            "STM32F407VE_BLACK",
+            "STM32F407VE_BLUE",
+            "STM32F407VE_RED"
+        ],
+        "default": "component"
+        }
+    ],    
+    "tasks": [
+        {
+            "label": "compile release all",
+            "group": "build",
+            "command": "mbed",
+            "args": [
+                "compile",
+                "-c",
+                "--build",
+                "../../BUILD/${workspaceFolderBasename}/Release",
+                "--source",
+                ".",
+                "--source",
+                "../../mbed-os",
+                "--source",
+                "../../custom_targets",
+                "--profile",
+                "release"
+            ]
+        },
+        {
+            "label": "compile release",
+            "group": "build",
+            "command": "mbed",
+            "args": [
+                "compile",
+                "--build",
+                "../../BUILD/${workspaceFolderBasename}/Release",
+                "--source",
+                ".",
+                "--source",
+                "../../mbed-os",
+                "--source",
+                "../../custom_targets",
+                "--source",
+                "../../libs",
+                "--profile",
+                "release"
+            ]
+        },
+        {
+            "label": "compile release ${config:mbed.target}",
+            "group": "build",
+            "command": "mbed",
+            "args": [
+                "compile",
+                "-m",
+                "${input:targetSelection}",
+                "--build",
+                "../../BUILD/${workspaceFolderBasename}/Release",
+                "--source",
+                ".",
+                "--source",
+                "../../mbed-os",
+                "--source",
+                "../../custom_targets",
+                "--profile",
+                "release"
+            ]
+        },
+        {
+            "label": "compile debug",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "command": "mbed",
+            "args": [
+                "compile",
+                "--build",
+                "../../BUILD/${workspaceFolderBasename}/Debug",
+                "--source",
+                ".",
+                "--source",
+                "../../mbed-os",
+                "--source",
+                "../../custom_targets",
+                "--source",
+                "../../libs",
+                "--profile",
+                "debug"
+            ]
+        },
+        {
+            "label": "compile develop",
+            "group": "build",
+            "command": "mbed",
+            "args": [
+                "compile",
+                "--build",
+                "../../BUILD/${workspaceFolderBasename}/Develop",
+                "--source",
+                ".",
+                "--source",
+                "../../mbed-os",
+                "--source",
+                "../../custom_targets",
+                "--source",
+                "../../libs",
+                "--profile",
+                "develop"
+            ]
+        },
+        {
+            "label": "echo",
+            "command": "echo \n\rworksspaceFolder: ${workspaceFolder}\n\rworkspaceFolderBasename: ${workspaceFolderBasename}"
+        },
+        {
+            "label": "list config options",
+            "group": "build",
+            "command": "mbed",
+            "args": [
+                "compile",
+                "--config",
+                "--source",
+                ".",
+                "--source",
+                "../../mbed-os",
+                "--source",
+                "../../libs",
+                "--source",
+                "../../drivers",
+                "--source",
+                "../../custom_targets",
+                "--source",
+                "../../components"
+            ]
+        }
+    ]
+}
